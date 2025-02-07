@@ -11,8 +11,6 @@ import WebKit
 struct WebView: NSViewRepresentable {
     let url: URL
 
-    // MARK: - Coordinator
-
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
@@ -40,16 +38,16 @@ struct WebView: NSViewRepresentable {
         }
     }
 
-    // MARK: - NSViewRepresentable Methods
-
     func makeNSView(context: Context) -> WKWebView {
         let webConfiguration = WKWebViewConfiguration()
         // Use the default (persistent) data store so cookies persist between launches.
         webConfiguration.websiteDataStore = WKWebsiteDataStore.default()
         
         let webView = WKWebView(frame: .zero, configuration: webConfiguration)
-        // Set the navigation delegate to the coordinator to receive events.
         webView.navigationDelegate = context.coordinator
+        
+        // Ensure the web view automatically resizes with its container.
+        webView.autoresizingMask = [.width, .height]
         
         // Start loading the URL.
         let request = URLRequest(url: url)
@@ -59,22 +57,21 @@ struct WebView: NSViewRepresentable {
     }
     
     func updateNSView(_ nsView: WKWebView, context: Context) {
-        // You can update the view if needed.
-        // For example, you could reload the URL if it changes.
     }
 }
 
-
-
 struct ContentView: View {
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
+        // Remove the fixed frame so the view can resize freely.
+        WebView(url: URL(string: "https://soundcloud.com")!)
+            .onAppear {
+                // Set the initial window size to 1280 x 720.
+                if let window = NSApplication.shared.windows.first {
+                    window.setContentSize(NSSize(width: 1280, height: 720))
+                    // Allow the window to be resized to smaller sizes.
+                    window.minSize = NSSize(width: 100, height: 100)
+                }
+            }
     }
 }
 

@@ -65,7 +65,7 @@ Feel free to fork this repository and submit pull requests if you have improveme
 
 Ideas for improvements:
 
-- resize web view along with window
+- manage OAuth authentication (requires pop-ups)
 - bind to the MacBook reverse | play | forward keys
 - feel free to suggest any other ideas!
 
