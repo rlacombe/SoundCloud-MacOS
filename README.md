@@ -50,7 +50,7 @@ Log in as you normally would—the app uses a persistent cookie store to keep yo
 
 ### (Alternative) Install unsigned binary
 
-[Download the volume image](SoundCloud.dmg) (`SoundCloud.dmg` file) and open it in Finder.
+[Download the volume image](https://github.com/rlacombe/SoundCloud-macOS/releases/download/v0.1.0/SoundCloud.dmg) (`SoundCloud.dmg` file) and open it in Finder.
 
 Move the SoundCloud app to the `Applications` folder on your Mac.
 
