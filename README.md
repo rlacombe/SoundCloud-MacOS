@@ -14,9 +14,12 @@ This is a very simple Swift application that wraps the SoundCloud web app using 
 
 ## Installation and Compilation
 
-Follow these steps to download and compile the project in Xcode:
+Follow the steps below to download and compile the project in Xcode.
 
-### 1. Clone the Repository
+
+### (Recommended) Compile from source code
+
+#### 1. Clone the Repository
 
 Open Terminal and run:
 
@@ -26,24 +29,31 @@ git clone https://github.com/yourusername/SoundCloudWrapperApp.git
 
 Or download the ZIP archive from GitHub and unzip it.
 
-### 2. Open the Project in Xcode
+#### 2. Open the Project in Xcode
 
 Navigate to the project folder.
 
 Double-click the SoundCloudWrapperApp.xcodeproj file to open the project in Xcode.
 
-### 3. Build the Project
+#### 3. Build the Project
 In Xcode, select the appropriate scheme (the default should work for you).
 
 Click Product > Build (or press Cmd+B) to compile the project.
 
-### 4. Run the App
+#### 4. Run the App
 
 With the project open in Xcode, click Product > Run (or press Cmd+R).
 
 The app window should appear displaying the SoundCloud login page in the embedded web view.
 
 Log in as you normally would—the app uses a persistent cookie store to keep you logged in even after closing and re-opening the app.
+
+### (Alternative) Install unsigned binary
+
+[Download the volume image](SoundCloud.dmg) (`SoundCloud.dmg` file) and open it in Finder.
+
+Move the SoundCloud app to the `Applications` folder on your Mac.
+
 
 ## Troubleshooting
 
