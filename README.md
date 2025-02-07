@@ -16,58 +16,54 @@ This is a very simple Swift application that wraps the SoundCloud web app using 
 
 Follow the steps below to download and compile the project in Xcode.
 
-
 ### (Recommended) Compile from source code
 
 #### 1. Clone the Repository
 
-Open Terminal and run:
+- Open Terminal and run:
 
 ```bash
 git clone https://github.com/yourusername/SoundCloudWrapperApp.git
 ```
 
-Or download the ZIP archive from GitHub and unzip it.
+- Or download the ZIP archive from GitHub and unzip it.
 
 #### 2. Open the Project in Xcode
 
-Navigate to the project folder.
+- Navigate to the project folder.
 
-Double-click the SoundCloudWrapperApp.xcodeproj file to open the project in Xcode.
+- Double-click the SoundCloudWrapperApp.xcodeproj file to open the project in Xcode.
 
 #### 3. Build the Project
-In Xcode, select the appropriate scheme (the default should work for you).
 
-Click Product > Build (or press Cmd+B) to compile the project.
+- In Xcode, select the appropriate scheme (the default should work for you).
+
+- Click Product > Build (or press Cmd+B) to compile the project.
 
 #### 4. Run the App
 
-With the project open in Xcode, click Product > Run (or press Cmd+R).
+- With the project open in Xcode, click Product > Run (or press Cmd+R).
 
-The app window should appear displaying the SoundCloud login page in the embedded web view.
+- The app window should appear displaying the SoundCloud login page in the embedded web view.
 
-Log in as you normally would—the app uses a persistent cookie store to keep you logged in even after closing and re-opening the app.
+- Log in as you normally would—the app uses a persistent cookie store to keep you logged in even after closing and re-opening the app.
 
 ### (Alternative) Install unsigned binary
 
-[Download the volume image](https://github.com/rlacombe/SoundCloud-macOS/releases/download/v0.1.0/SoundCloud.dmg) (`SoundCloud.dmg` file) and open it in Finder.
+This isn't a generally recommended way to download applications. However, if you are not comfortable using Xcode and compiling your own binary, you can follow the steps below (do this at your own risk):
 
-Move the SoundCloud app to the `Applications` folder on your Mac.
+#### 1. Download the app binary
 
+- [Download the volume image](https://github.com/rlacombe/SoundCloud-macOS/releases/download/v0.1.0/SoundCloud.dmg) (`SoundCloud.dmg` file) and open it in Finder.
 
-## Troubleshooting
+- Move the SoundCloud app to the `Applications` folder on your Mac.
 
-### Icon Issues:
+#### 2. By-pass 
 
-If your app icon isn’t displaying as expected, ensure that you have added all required image sizes to the AppIcon asset in Assets.xcassets.
+- Launch the app by double clicking on it; you will see an error message.
 
-### WKWebView Loading Errors:
+- Click on the `?` icon in the upper right and follow instructions to open the app anyway.
 
-If the web page does not load, check Xcode’s debug console for error messages. Make sure you have an active internet connection and that no firewall or proxy is blocking the connection.
-
-### Clearing Cache:
-
-Sometimes macOS caches app icons or other data. Restart the Dock by running killall Dock in Terminal if you need to refresh the icon display.
 
 ## Contributing
 
@@ -76,7 +72,9 @@ Feel free to fork this repository and submit pull requests if you have improveme
 Ideas for improvements:
 
 - manage OAuth authentication (requires pop-ups)
+
 - bind to the MacBook reverse | play | forward keys
+
 - feel free to suggest any other ideas!
 
 ## License
