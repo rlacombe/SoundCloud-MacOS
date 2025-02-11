@@ -1,5 +1,15 @@
 # SoundCloud for macOS
 
+I just added Tab management and tab bar UI, use cmd+T for new tab/cmd+W to close tab, and option click (right-click) > Open In a New Window to open in a New Tab
+
+Things to implement maybe : 
+    - Custom menu (right-click menu)
+    - Shortcut for open in a new tab
+
+
+    
+/////////
+
 SoundCloud doesn't offer a native macOS app: let me fix that for them! 
 
 This is a very simple Swift application that wraps the SoundCloud web app using a `WKWebView`. It allows you to log in to SoundCloud (email/password, no OAuth for now) and persist your session via cookies. 
