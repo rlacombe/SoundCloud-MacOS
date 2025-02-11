@@ -5,6 +5,9 @@ I just added Tab management and tab bar UI, use cmd+T for new tab/cmd+W to close
 Things to implement maybe : 
     - Custom menu (right-click menu)
     - Shortcut for open in a new tab
+
+
+    
 /////////
 
 SoundCloud doesn't offer a native macOS app: let me fix that for them! 
