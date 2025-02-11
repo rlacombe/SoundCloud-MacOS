@@ -23,6 +23,14 @@ struct SoundCloudApp: App {
                     tabManager.addTab(url: URL(string: "https://soundcloud.com")!)
                 }
                 .keyboardShortcut("t", modifiers: [.command])
+                
+                // New shortcut: open current link in new tab.
+                Button("Open Current Link in New Tab") {
+                    if let url = tabManager.selectedTab?.container.currentURL {
+                        tabManager.addTab(url: url)
+                    }
+                }
+                .keyboardShortcut("n", modifiers: [.command, .shift])
             }
         }
     }

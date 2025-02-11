@@ -49,9 +49,18 @@ class TabManager: ObservableObject {
     
     func addTab(url: URL) {
         let newTab = TabItem(url: url)
+        newTab.container.onOpenNewTab = { [weak self] url in
+            self?.addTab(url: url)
+        }
+        newTab.container.onOpenNewWindow = { url in
+            // Your window opening logic.
+            print("Open new window for \(url)")
+        }
         tabs.append(newTab)
         selectedTab = newTab
     }
+
+
     
     func closeTab(_ tab: TabItem) {
         // Remove the tab from the array.

@@ -2,7 +2,7 @@
 //  TabBarItemView.swift
 //  SoundCloud
 //
-//  Created by Jaufré Goumet on 11/02/2025.
+//  Created by Jaufré on 11/02/2025.
 //
 
 import SwiftUI
@@ -26,17 +26,18 @@ struct TabBarItemView: View {
         self._container = ObservedObject(wrappedValue: tab.container)
     }
     
+    @Environment(\.colorScheme) var colorScheme
+
     var backgroundColor: Color {
-        let baseColor = NSColor.windowBackgroundColor
         if isSelected {
-            return Color(baseColor)
+            return colorScheme == .dark ? Color(NSColor.darkGray) : Color(NSColor.windowBackgroundColor)
         } else {
-            let darkened: NSColor = isHovering
-                ? (baseColor.shadow(withLevel: 0.25) ?? baseColor)
-                : (baseColor.shadow(withLevel: 0.15) ?? baseColor)
-            return Color(darkened)
+            return colorScheme == .dark
+                ? Color(NSColor.gray).opacity(isHovering ? 0.3 : 0.2)
+                : Color(NSColor.lightGray).opacity(isHovering ? 0.5 : 0.4)
         }
     }
+
     
     var body: some View {
         HStack(spacing: 4) {

@@ -2,25 +2,45 @@
 //  CustomWKWebView.swift
 //  SoundCloud
 //
-//  Created by Jaufré Goumet on 11/02/2025.
+//  Created by Jaufré on 11/02/2025.
 //
 import WebKit
 import AppKit
 
+enum ContextualMenuAction {
+    case openNewTab
+    case openNewWindow
+}
+
 class CustomWKWebView: WKWebView {
     /// Closure to be called when “Open Link in New Tab” is selected.
-    var onOpenInNewTab: ((URL) -> Void)?
-
+    var onOpenNewTab: ((URL) -> Void)?
+    /// Closure to be called when “Open Link in New Window” is selected.
+    var onOpenNewWindow: ((URL) -> Void)?
+    
+    /// Tracks which action was triggered (if needed in delegate methods).
+    var contextualMenuAction: ContextualMenuAction?
+    
     override func menu(for event: NSEvent) -> NSMenu? {
-        // Get the default menu.
+        // If this is a middle click (buttonNumber == 2), don't modify the menu.
+        if event.buttonNumber == 2 {
+            return super.menu(for: event)
+        }
+        
+        // For left/right clicks, get the default menu.
         let menu = super.menu(for: event) ?? NSMenu()
         
-        // Convert the event location into the web view’s coordinate system.
+        // Iterate through the menu items and rename the default "Open Link in New Window" item.
+        for item in menu.items {
+            if let id = item.identifier?.rawValue, id == "WKMenuItemIdentifierOpenLinkInNewWindow" {
+                item.title = "Open Link in New Tab"
+            }
+        }
+        
+        // Now, for a non-middle click, get the link using synchronous JavaScript.
         let point = convert(event.locationInWindow, from: nil)
-        // JavaScript to fetch the href attribute of the closest link element.
         let js = "document.elementFromPoint(\(point.x), \(point.y))?.closest('a')?.href;"
         
-        // Evaluate the JavaScript synchronously using a semaphore (this is not ideal for production, but works for demo purposes).
         var linkURLString: String? = nil
         let semaphore = DispatchSemaphore(value: 0)
         evaluateJavaScript(js) { (result, error) in
@@ -31,21 +51,57 @@ class CustomWKWebView: WKWebView {
         }
         _ = semaphore.wait(timeout: .now() + 0.5)
         
-        // If a valid SoundCloud link was found, add the menu item.
+        // If a valid SoundCloud link is found and the default item is missing, add one.
         if let urlStr = linkURLString,
            let url = URL(string: urlStr),
            url.host?.contains("soundcloud.com") == true {
-            let item = NSMenuItem(title: "Open Link in New Tab", action: #selector(openLinkInNewTab(_:)), keyEquivalent: "")
-            item.target = self
-            item.representedObject = url
-            menu.addItem(item)
+            if !menu.items.contains(where: { $0.title == "Open Link in New Tab" }) {
+                let newItem = NSMenuItem(title: "Open Link in New Tab", action: #selector(openNewTab(_:)), keyEquivalent: "")
+                newItem.target = self
+                newItem.representedObject = url
+                menu.addItem(newItem)
+            }
         }
+        
         return menu
     }
+
     
-    @objc func openLinkInNewTab(_ sender: NSMenuItem) {
+
+
+    
+    @objc func openNewTab(_ sender: NSMenuItem) {
         if let url = sender.representedObject as? URL {
-            onOpenInNewTab?(url)
+            self.contextualMenuAction = .openNewTab
+            onOpenNewTab?(url)
         }
+    }
+    
+    @objc func openNewWindow(_ sender: NSMenuItem) {
+        if let url = sender.representedObject as? URL {
+            self.contextualMenuAction = .openNewWindow
+            onOpenNewWindow?(url)
+        }
+    }
+}
+
+extension CustomWKWebView: WKUIDelegate {
+    func webView(_ webView: WKWebView,
+                 createWebViewWith configuration: WKWebViewConfiguration,
+                 for navigationAction: WKNavigationAction,
+                 windowFeatures: WKWindowFeatures) -> WKWebView? {
+        if navigationAction.targetFrame == nil, let url = navigationAction.request.url {
+            DispatchQueue.main.async {
+                if let customWebView = webView as? CustomWKWebView {
+                    if let action = customWebView.contextualMenuAction, action == .openNewTab {
+                        customWebView.onOpenNewTab?(url)
+                    } else {
+                        customWebView.onOpenNewWindow?(url)
+                    }
+                    customWebView.contextualMenuAction = nil
+                }
+            }
+        }
+        return nil
     }
 }

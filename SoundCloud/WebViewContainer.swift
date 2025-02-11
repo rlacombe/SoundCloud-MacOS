@@ -9,11 +9,14 @@ import Foundation
 import SwiftUI
 import WebKit
 
-class WebViewContainer: NSObject, ObservableObject, WKScriptMessageHandler {
-    var webView: WKWebView
+class WebViewContainer: NSObject, ObservableObject, WKScriptMessageHandler, WKNavigationDelegate, WKUIDelegate {
+    var webView: CustomWKWebView
     @Published var currentURL: URL?
     @Published var currentTitle: String?
     var onOpenNewTab: ((URL) -> Void)?
+    var onOpenNewWindow: ((URL) -> Void)?
+    
+    private var coordinator: Coordinator!
     
     init(url: URL) {
         // Create a configuration with a user content controller.
@@ -49,8 +52,10 @@ class WebViewContainer: NSObject, ObservableObject, WKScriptMessageHandler {
         config.userContentController = contentController
         config.websiteDataStore = WKWebsiteDataStore.default()
         
+        
+        
         // Initialize all stored properties BEFORE calling super.init().
-        self.webView = WKWebView(frame: .zero, configuration: config)
+        self.webView = CustomWKWebView(frame: .zero, configuration: config)
         self.currentURL = url
         self.currentTitle = nil
         
@@ -60,17 +65,25 @@ class WebViewContainer: NSObject, ObservableObject, WKScriptMessageHandler {
         // Now safely use self.
         contentController.add(self, name: "urlChanged")
         
-        let coordinator = Coordinator(self)
-        self.webView.navigationDelegate = coordinator
-        self.webView.uiDelegate = coordinator
-        
+        // Set up the navigation and UI delegates.
+        self.coordinator = Coordinator(self)
+        self.webView.navigationDelegate = self.coordinator
+        self.webView.uiDelegate = self.coordinator
+                
         let request = URLRequest(url: url)
         self.webView.load(request)
+                
+        self.webView.onOpenNewTab = { [weak self] url in
+                    self?.onOpenNewTab?(url)
+        }
+        self.webView.onOpenNewWindow = { [weak self] url in
+                    self?.onOpenNewWindow?(url)
+        }
     }
     
-    // MARK: - WKScriptMessageHandler Conformance
-    func userContentController(_ userContentController: WKUserContentController,
-                               didReceive message: WKScriptMessage) {
+    
+    
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         if message.name == "urlChanged",
            let dict = message.body as? [String: Any],
            let newURLString = dict["url"] as? String,
@@ -83,8 +96,30 @@ class WebViewContainer: NSObject, ObservableObject, WKScriptMessageHandler {
         }
     }
     
+    // Updated method signature to match WKNavigationDelegate protocol
+       @objc func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
+           print("Navigation did commit.")
+       }
+
+       // Updated method signature to match WKNavigationDelegate protocol
+       @objc func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+           print("Navigation finished successfully.")
+           if let newURL = webView.url {
+               DispatchQueue.main.async {
+                   self.currentURL = newURL
+                   self.currentTitle = webView.title
+               }
+           }
+       }
+
+       // Updated method signature to match WKNavigationDelegate protocol
+       @objc func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+           print("Navigation error: \(error.localizedDescription)")
+       }
+   }
+    
     // MARK: - Coordinator
-    class Coordinator: NSObject, WKNavigationDelegate, WKUIDelegate {
+class Coordinator: NSObject, WKNavigationDelegate, WKUIDelegate {
         var parent: WebViewContainer
         
         init(_ parent: WebViewContainer) {
@@ -121,4 +156,5 @@ class WebViewContainer: NSObject, ObservableObject, WKScriptMessageHandler {
             return nil
         }
     }
-}
+
+

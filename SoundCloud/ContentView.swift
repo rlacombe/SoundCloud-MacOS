@@ -69,12 +69,20 @@ struct ContentView: View {
                             .opacity(tabManager.selectedTab?.id == tab.id ? 1 : 0)
                             .allowsHitTesting(tabManager.selectedTab?.id == tab.id)
                             .onAppear {
-                                // This sets the callback so that if a link is right-clicked (via CustomWKWebView),
-                                // it opens a new tab.
                                 tab.container.onOpenNewTab = { url in
+                                    print("Adding new tab: \(url)")
                                     tabManager.addTab(url: url)
                                 }
+                                tab.container.onOpenNewWindow = { url in
+                                    print("Creating new window for: \(url)")
+                                    if let currentWindow = NSApplication.shared.windows.first {
+                                        let newWindow = createNewWindow(for: url)
+                                        currentWindow.addTabbedWindow(newWindow, ordered: .above)
+                                    }
+                                }
                             }
+
+
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
